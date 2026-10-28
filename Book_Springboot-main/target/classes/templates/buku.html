@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Rak Bacaan Pintar</title>
+    <style>
+        body { max-width: 960px; margin: 0 auto; padding: 24px; font-family: Arial, sans-serif; color: #222; }
+        h1 { margin-bottom: 4px; }
+        .subtitle { margin-top: 0; color: #666; }
+        nav { margin: 20px 0; }
+        a { color: #0645ad; }
+        .summary { margin: 20px 0; }
+        .card { display: inline-block; margin-right: 24px; }
+        .card strong { margin-right: 4px; }
+        .card span { color: #666; }
+        .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0; }
+        input, select, button { padding: 7px; border: 1px solid #999; border-radius: 2px; }
+        button { background: #eee; color: #222; cursor: pointer; }
+        .toolbar .export { padding: 7px; color: #0645ad; }
+        table { width: 100%; border-collapse: collapse; margin: 16px 0 28px; }
+        th, td { padding: 9px; text-align: left; border: 1px solid #ccc; }
+        th { background: #f2f2f2; }
+        .tersedia { color: #176b2c; }
+        .menipis { color: #996500; }
+        .habis { color: #b00020; }
+        .empty { color: #666; }
+        .pesan { margin: 14px 0; padding: 8px; border: 1px solid #ccc; }
+        .sukses { color: #176b2c; }
+        .error { color: #b00020; }
+        .aksi { white-space: nowrap; }
+        .aksi form { display: inline; }
+        .aksi button { padding: 5px 8px; font-size: 12px; }
+        button:disabled { color: #888; cursor: not-allowed; }
+        @media (max-width: 680px) { body { padding: 16px; } .card { display: block; margin: 6px 0; } }
+    </style>
+</head>
+<body>
+<h1>Rak Bacaan Pintar</h1>
+<p class="subtitle">Kelola koleksi dan temukan buku yang siap dipinjam.</p>
+
+<nav><a th:href="@{/anggota}">Lihat Anggota</a></nav>
+
+<section class="summary">
+    <div class="card"><strong th:text="${jumlahJudul}">0</strong><span>Total judul</span></div>
+    <div class="card"><strong th:text="${jumlahBukuTersedia}">0</strong><span>Judul tersedia</span></div>
+    <div class="card"><strong th:text="${jumlahBukuHabis}">0</strong><span>Judul habis</span></div>
+    <div class="card"><strong th:text="${totalStok}">0</strong><span>Total eksemplar</span></div>
+</section>
+
+<p class="pesan sukses" th:if="${pesanSukses}" th:text="${pesanSukses}"></p>
+<p class="pesan error" th:if="${pesanError}" th:text="${pesanError}"></p>
+
+<form class="toolbar" th:action="@{/buku}" method="get">
+    <input name="kata" th:value="${kata}" placeholder="Cari judul">
+    <select name="status">
+        <option value="semua" th:selected="${status == 'semua'}">Semua stok</option>
+        <option value="tersedia" th:selected="${status == 'tersedia'}">Tersedia</option>
+        <option value="habis" th:selected="${status == 'habis'}">Habis</option>
+    </select>
+    <select name="urutan">
+        <option value="judul" th:selected="${urutan == 'judul'}">Urutkan: judul</option>
+        <option value="stok" th:selected="${urutan == 'stok'}">Urutkan: stok terbanyak</option>
+    </select>
+    <button type="submit">Cari</button>
+    <a class="export"
+       th:href="@{/buku/export(kata=${kata}, status=${status}, urutan=${urutan})}">Ekspor CSV</a>
+</form>
+
+<p class="empty" th:if="${#lists.isEmpty(daftarBuku)}">Tidak ada buku yang cocok dengan pencarian ini.</p>
+<table th:unless="${#lists.isEmpty(daftarBuku)}">
+    <tr><th>ID</th><th>Judul</th><th>Stok</th><th>Status</th><th>Aksi</th></tr>
+    <tr th:each="b : ${daftarBuku}">
+        <td th:text="${b.idBuku}">B001</td>
+        <td th:text="${b.judul}">Judul buku</td>
+        <td th:text="${b.stok}"
+            th:class="${b.stok == 0 ? 'habis' : (b.stok == 1 ? 'menipis' : 'tersedia')}">0</td>
+        <td th:text="${b.stok == 0 ? 'Habis' : (b.stok == 1 ? 'Stok menipis' : 'Tersedia')}">Tersedia</td>
+        <td class="aksi">
+            <form th:action="@{/buku/{idBuku}/pinjam(idBuku=${b.idBuku})}" method="post">
+                <button type="submit" th:disabled="${b.stok == 0}">Pinjam</button>
+            </form>
+            <form th:action="@{/buku/{idBuku}/kembalikan(idBuku=${b.idBuku})}" method="post">
+                <button type="submit" class="kembalikan">Kembalikan</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<h2>Tambah Buku</h2>
+<form th:action="@{/buku}" method="post">
+    <input name="idBuku" placeholder="ID" required>
+    <input name="judul" placeholder="Judul" required>
+    <input name="stok" type="number" min="0" value="1">
+    <button type="submit">Simpan</button>
+</form>
+</body>
+</html>

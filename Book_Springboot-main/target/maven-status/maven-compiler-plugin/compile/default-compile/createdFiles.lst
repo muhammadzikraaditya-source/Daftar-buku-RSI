@@ -1,0 +1,6 @@
+id\ac\ub\filkom\contoh\repository\BukuRepository.class
+id\ac\ub\filkom\contoh\entity\Buku.class
+id\ac\ub\filkom\entity\Peminjam.class
+id\ac\ub\filkom\contoh\controller\BukuController.class
+id\ac\ub\filkom\contoh\service\BukuService.class
+id\ac\ub\filkom\contoh\ContohApplication.class
