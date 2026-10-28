@@ -20,4 +20,21 @@ public class AnggotaService {
     public List<Anggota> lihatSemuaAnggota() {
         return anggotaRepository.findAll();
     }
+
+    public Anggota tambahAnggota(String idAnggota, String nama, int batasPinjam) {
+        String idBersih = idAnggota == null ? "" : idAnggota.trim();
+        String namaBersih = nama == null ? "" : nama.trim();
+
+        if (idBersih.isBlank() || namaBersih.isBlank()) {
+            throw new IllegalArgumentException("ID dan nama anggota wajib diisi.");
+        }
+        if (batasPinjam < 0) {
+            throw new IllegalArgumentException("Batas pinjam tidak boleh negatif.");
+        }
+        if (anggotaRepository.existsById(idBersih)) {
+            throw new IllegalArgumentException("ID anggota " + idBersih + " sudah digunakan.");
+        }
+
+        return anggotaRepository.save(new Anggota(idBersih, namaBersih, batasPinjam));
+    }
 }

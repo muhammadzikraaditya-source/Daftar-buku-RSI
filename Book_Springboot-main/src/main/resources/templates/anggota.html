@@ -9,10 +9,18 @@
         th, td { padding: 9px; text-align: left; border: 1px solid #ccc; }
         th { background: #f2f2f2; }
         a { color: #0645ad; }
+        .pesan { margin: 14px 0; padding: 8px; border: 1px solid #ccc; }
+        .sukses { color: #176b2c; }
+        .error { color: #b00020; }
+        input, button { padding: 7px; border: 1px solid #999; border-radius: 2px; }
+        button { background: #eee; cursor: pointer; }
     </style>
 </head>
 <body>
 <h1>Daftar Anggota</h1>
+
+<p class="pesan sukses" th:if="${pesanSukses}" th:text="${pesanSukses}"></p>
+<p class="pesan error" th:if="${pesanError}" th:text="${pesanError}"></p>
 
 <p th:if="${#lists.isEmpty(daftarAnggota)}">Belum ada anggota.</p>
 
@@ -24,6 +32,14 @@
         <td th:text="${a.batasPinjam}">0</td>
     </tr>
 </table>
+
+<h2>Tambah Anggota</h2>
+<form th:action="@{/anggota}" method="post">
+    <input name="idAnggota" placeholder="ID" maxlength="10" required>
+    <input name="nama" placeholder="Nama anggota" maxlength="100" required>
+    <input name="batasPinjam" type="number" min="0" value="1" required>
+    <button type="submit">Simpan</button>
+</form>
 
 <a th:href="@{/buku}">← Ke Daftar Buku</a>
 </body>
